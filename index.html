@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ボルトなら何秒？</title>
+  <meta
+    name="description"
+    content="距離を入力して、ウサイン・ボルトの100m世界記録を基準に走行タイムを計算！"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      color: #172033;
+      background: linear-gradient(135deg, #10172a, #253b65);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 460px;
+      padding: 30px 24px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 16px 48px #0003;
+      text-align: center;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #fff1c2;
+      color: #795500;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 18px 0 8px;
+      font-size: 30px;
+    }
+
+    .subtitle {
+      color: #657086;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin: 24px 0 14px;
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+      border-radius: 12px;
+    }
+
+    input {
+      min-width: 0;
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ccd3df;
+      font-size: 18px;
+    }
+
+    select {
+      padding: 0 12px;
+      border: 1px solid #ccd3df;
+      background: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      background: #f5b800;
+      color: #172033;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #e8aa00;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid #6b9cff;
+      outline-offset: 2px;
+    }
+
+    #result {
+      margin-top: 24px;
+      padding: 24px 12px;
+      background: #f2f6fc;
+      border-radius: 16px;
+    }
+
+    .result-label {
+      color: #657086;
+      font-size: 14px;
+    }
+
+    #seconds {
+      margin: 8px 0;
+      font-size: 46px;
+      font-weight: 800;
+      color: #1746a2;
+      overflow-wrap: anywhere;
+    }
+
+    #timeFormat {
+      margin: 8px 0 14px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #172033;
+      overflow-wrap: anywhere;
+    }
+
+    #speed {
+      font-size: 14px;
+      color: #657086;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #657086;
+      text-align: left;
+    }
+
+    #error {
+      color: #c62828;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <span class="tag">WORLD'S FASTEST</span>
+
+    <h1>⚡ ボルトなら何秒？</h1>
+
+    <p class="subtitle">
+      その距離、世界最速の男なら<br>
+      何秒で走れる？
+    </p>
+
+    <form id="calculator">
+      <div class="input-row">
+        <input
+          id="distance"
+          type="number"
+          min="0.01"
+          max="1000000"
+          step="any"
+          value="100"
+          placeholder="距離を入力"
+          aria-label="走る距離"
+          required
+        >
+
+        <select id="unit" aria-label="距離の単位">
+          <option value="m">メートル</option>
+          <option value="km">キロメートル</option>
+        </select>
+      </div>
+
+      <button type="submit">
+        ボルトなら何秒か計算！
+      </button>
+
+      <p id="error" role="alert"></p>
+    </form>
+
+    <section id="result" aria-live="polite">
+      <div class="result-label">ボルトなら…</div>
+
+      <div id="seconds">9.58 秒</div>
+
+      <div id="timeFormat">0時間 0分 9秒</div>
+
+      <div id="speed">
+        平均速度：約37.58 km/h
+      </div>
+    </section>
+
+    <p class="note">
+      ※ウサイン・ボルトの100m世界記録9.58秒
+      （2009年）を基準に計算した参考値です。
+      どの距離でも100mと同じ平均速度で走ると
+      仮定しており、実際の走行タイムとは異なります。
+    </p>
+  </main>
+
+  <script>
+    // ウサイン・ボルトの100m世界記録
+    const RECORD_SECONDS = 9.58;
+    const RECORD_METERS = 100;
+
+    // 平均速度を計算（m/秒）
+    const speedMetersPerSecond =
+      RECORD_METERS / RECORD_SECONDS;
+
+    // HTMLの要素を取得
+    const form = document.getElementById("calculator");
+    const distanceInput = document.getElementById("distance");
+    const unitInput = document.getElementById("unit");
+
+    const secondsOutput = document.getElementById("seconds");
+    const timeFormatOutput = document.getElementById("timeFormat");
+    const speedOutput = document.getElementById("speed");
+    const errorOutput = document.getElementById("error");
+
+    // 計算処理
+    function calculateTime(event) {
+      event.preventDefault();
+
+      errorOutput.textContent = "";
+
+      const enteredDistance = Number(distanceInput.value);
+
+      // 入力値のチェック
+      if (
+        distanceInput.value.trim() === "" ||
+        !Number.isFinite(enteredDistance) ||
+        enteredDistance <= 0 ||
+        enteredDistance > 1000000
+      ) {
+        errorOutput.textContent =
+          "0より大きく、100万以下の距離を入力してください。";
+        return;
+      }
+
+      // kmをmに変換
+      const meters =
+        unitInput.value === "km"
+          ? enteredDistance * 1000
+          : enteredDistance;
+
+      // 距離 ÷ 平均速度 = 秒数
+      const seconds = meters / speedMetersPerSecond;
+
+      // 時速を計算
+      const kmPerHour = speedMetersPerSecond * 3.6;
+
+      // 小数点以下2桁まで表示
+      secondsOutput.textContent =
+        seconds.toLocaleString("ja-JP", {
+          maximumFractionDigits: 2
+        }) + " 秒";
+
+      // 秒数を時間・分・秒に変換
+      const totalSeconds = Math.floor(seconds);
+
+      const hours = Math.floor(totalSeconds / 3600);
+
+      const minutes = Math.floor(
+        (totalSeconds % 3600) / 60
+      );
+
+      const remainingSeconds = totalSeconds % 60;
+
+      // 時間・分・秒を表示
+      timeFormatOutput.textContent =
+        hours + "時間 " +
+        minutes + "分 " +
+        remainingSeconds + "秒";
+
+      // 平均速度を表示
+      speedOutput.textContent =
+        "平均速度：約" + kmPerHour.toFixed(2) + " km/h";
+    }
+
+    // ボタンを押すと計算
+    form.addEventListener("submit", calculateTime);
+
+    // 最初の表示も計算結果と一致させる
+    calculateTime({
+      preventDefault: function () {}
+    });
+  </script>
+</body>
+</html>
